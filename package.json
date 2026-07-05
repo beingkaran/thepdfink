@@ -1,0 +1,50 @@
+{
+  "name": "thepdf-ink",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "preview": "vite preview",
+    "deploy": "npm run build && wrangler pages deploy dist --project-name=thepdf-ink",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
+    "tauri:build:dmg": "tauri build --bundles dmg",
+    "tauri:android:init": "tauri android init",
+    "tauri:ios:init": "tauri ios init",
+    "tauri:android:build": "tauri android build",
+    "tauri:ios:build": "tauri ios build --target aarch64-sim --no-sign",
+    "build:native:macos": "bash scripts/build-macos-dmg.sh",
+    "build:native:android": "bash scripts/build-android.sh",
+    "build:native:ios": "bash scripts/build-ios.sh",
+    "build:native:windows": "bash scripts/build-windows.sh"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.11.1",
+    "@tauri-apps/plugin-dialog": "^2.7.1",
+    "@tauri-apps/plugin-fs": "^2.5.1",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
+    "lucide-react": "^1.23.0",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^6.1.200",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "tesseract.js": "^7.0.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.4",
+    "@types/file-saver": "^2.0.7",
+    "@types/node": "^24.13.2",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.3",
+    "oxlint": "^1.71.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.1.1",
+    "wrangler": "^4.107.0"
+  }
+}
