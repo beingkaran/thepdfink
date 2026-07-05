@@ -95,6 +95,11 @@ export function Downloads() {
         One-time <strong>${PRICE_USD}</strong> unlock — yours forever on every platform, with free
         updates. <a href="/pricing">See pricing →</a>
       </p>
+      <p className="download-install-note">
+        Builds aren’t code-signed yet, so your OS may warn on first launch: on macOS right-click →
+        Open, on Windows click “More info → Run anyway”, and on Linux run
+        <code>chmod +x</code> the AppImage. Android requires enabling “Install unknown apps”.
+      </p>
     </section>
   )
 }

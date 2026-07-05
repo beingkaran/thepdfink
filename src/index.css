@@ -2067,6 +2067,21 @@ legend {
   margin: 26px auto 0;
 }
 .download-note strong { color: var(--ink); }
+.download-install-note {
+  text-align: center;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--ink-muted);
+  max-width: 640px;
+  margin: 10px auto 0;
+}
+.download-install-note code {
+  font-size: 0.9em;
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: var(--accent-soft);
+  color: var(--ink);
+}
 
 @media (max-width: 760px) {
   .download-grid { grid-template-columns: repeat(2, 1fr); }
