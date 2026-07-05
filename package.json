@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
+    "gen:landing": "node scripts/gen-landing.mjs",
     "preview": "vite preview",
     "deploy": "npm run build && wrangler pages deploy dist --project-name=thepdf-ink",
     "tauri": "tauri",
@@ -20,7 +21,8 @@
     "build:native:macos": "bash scripts/build-macos-dmg.sh",
     "build:native:android": "bash scripts/build-android.sh",
     "build:native:ios": "bash scripts/build-ios.sh",
-    "build:native:windows": "bash scripts/build-windows.sh"
+    "build:native:windows": "bash scripts/build-windows.sh",
+    "build:native:linux": "bash scripts/build-linux.sh"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.11.1",

@@ -19,6 +19,11 @@ import {
   Layers,
   Sparkles,
   Bot,
+  FileType2,
+  Camera,
+  TextCursorInput,
+  ShieldAlert,
+  FormInput,
 } from 'lucide-react'
 
 export type ToolId =
@@ -37,6 +42,11 @@ export type ToolId =
   | 'fill-form'
   | 'sign'
   | 'find-replace'
+  | 'pdf-to-word'
+  | 'scan'
+  | 'edit'
+  | 'auto-redact'
+  | 'form-builder'
   // Pro tools (unlocked with the $29 tier)
   | 'ocr'
   | 'batch'
@@ -170,6 +180,46 @@ export const tools: Tool[] = [
     multiple: false,
   },
   {
+    id: 'pdf-to-word',
+    name: 'PDF to Word',
+    description: 'Convert a PDF into an editable Word (.docx) document, on your device.',
+    icon: FileType2,
+    accept: 'application/pdf',
+    multiple: false,
+  },
+  {
+    id: 'edit',
+    name: 'Edit PDF',
+    description: 'Edit existing text inline with font matching, and drop in images.',
+    icon: TextCursorInput,
+    accept: 'application/pdf',
+    multiple: false,
+  },
+  {
+    id: 'scan',
+    name: 'Scan to PDF',
+    description: 'Capture pages with your camera — auto-enhanced and saved as a PDF.',
+    icon: Camera,
+    accept: 'image/*',
+    multiple: true,
+  },
+  {
+    id: 'auto-redact',
+    name: 'Auto-Redact',
+    description: 'Automatically find and permanently remove emails, phones, SSNs and cards.',
+    icon: ShieldAlert,
+    accept: 'application/pdf',
+    multiple: false,
+  },
+  {
+    id: 'form-builder',
+    name: 'Build a Form',
+    description: 'Add fillable text fields, checkboxes and dropdowns to any PDF.',
+    icon: FormInput,
+    accept: 'application/pdf',
+    multiple: false,
+  },
+  {
     id: 'viewer',
     name: 'View PDF',
     description: 'Open multiple PDFs in tabs and switch between them instantly.',
@@ -207,11 +257,10 @@ export const tools: Tool[] = [
   {
     id: 'ai-ask',
     name: 'Ask AI',
-    description: 'Chat with your document — ask questions and get answers with citations.',
+    description: 'Chat with your document — ask questions and get answers with page citations.',
     icon: Bot,
     accept: 'application/pdf',
     multiple: false,
     pro: true,
-    soon: true,
   },
 ]

@@ -12,7 +12,7 @@ const PRO_PERKS = [
   'OCR — make scanned PDFs searchable',
   'Batch & bulk processing',
   'Secure, irreversible redaction',
-  'AI: summarize, ask & auto-fill (soon)',
+  'AI: summarise & ask your PDF (on-device)',
   'Everything in Personal, on every device',
 ]
 

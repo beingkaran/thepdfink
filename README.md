@@ -1,9 +1,9 @@
 # thepdf.ink
 
-Private, offline PDF tools for **macOS, Windows, iOS, Android and the web**. Every tool —
-merge, split, rotate, organise, watermark, redact, find & replace, annotate, fill forms, sign,
-images ↔ PDF, compress, metadata and the viewer — runs **entirely on your device**. Files are
-never uploaded.
+Private, offline PDF tools for **macOS, Windows, Linux, iOS, Android and the web**. Every tool —
+merge, split, rotate, organise, watermark, redact, auto-redact, find & replace, edit text & images,
+scan, PDF → Word, annotate, fill forms, build forms, sign, images ↔ PDF, compress, metadata and the
+viewer — runs **entirely on your device**. Files are never uploaded.
 
 Built with **Tauri 2 + React 19 + Vite** and powered by `pdf-lib` and `PDF.js`.
 
@@ -29,6 +29,7 @@ npm run tauri:dev      # desktop app (Tauri)
 npm run build                 # web bundle -> dist/
 npm run build:native:macos    # macOS .dmg      -> releases/
 npm run build:native:windows  # Windows .exe    -> releases/  (run scripts/build-windows.ps1 on Windows)
+npm run build:native:linux    # Linux AppImage/.deb/.rpm -> releases/  (needs WebKitGTK, see script)
 npm run build:native:android  # Android .apk    -> releases/
 npm run build:native:ios      # iOS simulator   -> releases/
 npm run deploy                # build + deploy web to Cloudflare Pages
@@ -76,7 +77,10 @@ Everything below uses clearly-marked placeholders. Replace them before shipping:
   (image + invisible text layer) and a `.txt`. Engine + English model download once from a CDN
   and are cached; your file is never uploaded.
 - **AI Summarize** (`src/lib/summarize.ts`) — on-device extractive summariser, no model download,
-  no network. "Ask AI" is still roadmap (shows the upgrade prompt).
+  no network.
+- **Ask AI** (`src/lib/ask.ts`) — on-device retrieval Q&A: builds a TF-IDF index over the PDF's
+  sentences and answers questions with page citations. No model download, no network; the text
+  never leaves the device. UI is a chat panel (`src/components/AskPanel.tsx`).
 - **Secure redaction** (`redactTextSecure` in `src/lib/pdf.ts`) — rasterises matched pages and
   burns the text out, so redacted content cannot be selected, searched or recovered.
 

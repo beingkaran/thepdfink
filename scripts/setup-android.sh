@@ -38,4 +38,7 @@ cd "$(dirname "$0")/.."
 source "$HOME/.cargo/env"
 npx tauri android init
 
+echo "→ Adding CAMERA permission (for Scan to PDF)..."
+bash scripts/patch-android-permissions.sh
+
 echo "✓ Android environment ready. Build with: npm run tauri:android:build"

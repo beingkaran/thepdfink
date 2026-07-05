@@ -57,7 +57,7 @@ export const plans: Plan[] = [
     tagline: 'Buy me a coffee. Keep it forever.',
     featuresLead: 'Everything in Free, plus:',
     features: [
-      { label: 'Native apps — macOS, Windows, iOS & Android' },
+      { label: 'Native apps — macOS, Windows, Linux, iOS & Android' },
       { label: 'Fully offline, ad-free & tracking-free' },
       { label: 'All 15 tools on every device' },
       { label: 'Free updates, forever' },
@@ -79,7 +79,8 @@ export const plans: Plan[] = [
       { label: 'OCR — make scanned PDFs searchable' },
       { label: 'Batch & bulk processing' },
       { label: 'Secure, irreversible redaction' },
-      { label: 'AI: summarize, ask & auto-fill', soon: true },
+      { label: 'AI: summarise & ask your PDF — on-device' },
+      { label: 'AI auto-fill forms', soon: true },
       { label: 'Priority updates' },
     ],
     cta: 'Get Pro',

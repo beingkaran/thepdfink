@@ -23,7 +23,9 @@ export async function downloadUint8Array(bytes: Uint8Array, filename: string) {
     ? 'application/pdf'
     : filename.endsWith('.png')
       ? 'image/png'
-      : 'application/octet-stream'
+      : filename.endsWith('.docx')
+        ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        : 'application/octet-stream'
   await downloadBlob(new Blob([copy], { type }), filename)
 }
 

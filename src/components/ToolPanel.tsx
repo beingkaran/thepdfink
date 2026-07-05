@@ -15,6 +15,9 @@ import {
   organizePdf,
   addWatermark,
   redactTextSecure,
+  redactPatternsSecure,
+  PII_PATTERNS,
+  type PiiPatternId,
   findAndReplaceText,
   imagesToPdf,
   pdfToImages,
@@ -23,6 +26,7 @@ import {
   updateMetadata,
   type PdfMetadata,
 } from '../lib/pdf'
+import { pdfToWord } from '../lib/pdf-to-word'
 import { applyAnnotations, type Annotation } from '../lib/pdf-annotations'
 import { fillFormFields } from '../lib/pdf-forms'
 import { addImageSignature, type SignaturePlacement } from '../lib/pdf-signature'
@@ -53,6 +57,10 @@ export function ToolPanel({ tool, onClose }: ToolPanelProps) {
   const [watermarkText, setWatermarkText] = useState('CONFIDENTIAL')
   const [watermarkOpacity, setWatermarkOpacity] = useState(0.3)
   const [redactQuery, setRedactQuery] = useState('')
+  const [piiPatterns, setPiiPatterns] = useState<Set<PiiPatternId>>(
+    () => new Set<PiiPatternId>(['email', 'phone', 'ssn', 'creditCard']),
+  )
+  const [customRegex, setCustomRegex] = useState('')
   const [findQuery, setFindQuery] = useState('')
   const [replaceQuery, setReplaceQuery] = useState('')
   const [caseSensitive, setCaseSensitive] = useState(false)
@@ -248,6 +256,34 @@ export function ToolPanel({ tool, onClose }: ToolPanelProps) {
           setSuccess('PDF with updated metadata downloaded.')
           break
         }
+        case 'pdf-to-word': {
+          if (!files[0]) throw new Error('Add a PDF file.')
+          const { bytes, empty } = await pdfToWord(files[0])
+          if (empty) {
+            throw new Error(
+              'No selectable text found — this looks like a scan. Run OCR first, then convert.',
+            )
+          }
+          await downloadUint8Array(bytes, `${baseName(files[0].name)}.docx`)
+          setSuccess('Word document (.docx) downloaded.')
+          break
+        }
+        case 'auto-redact': {
+          if (!files[0]) throw new Error('Add a PDF file.')
+          const selected = [...piiPatterns]
+          if (!selected.length && !customRegex.trim()) {
+            throw new Error('Select at least one type of data to redact.')
+          }
+          const { bytes, matches } = await redactPatternsSecure(
+            files[0],
+            selected,
+            customRegex,
+          )
+          if (matches === 0) throw new Error('No matching data found to redact.')
+          await downloadUint8Array(bytes, `${baseName(files[0].name)}_redacted.pdf`)
+          setSuccess(`Redacted ${matches} match(es). The underlying data has been removed.`)
+          break
+        }
         default:
           break
       }
@@ -409,6 +445,53 @@ export function ToolPanel({ tool, onClose }: ToolPanelProps) {
                   selected, searched or recovered. Other text becomes non-selectable on those pages.
                 </small>
               </label>
+            </div>
+          )}
+
+          {tool.id === 'auto-redact' && (
+            <div className="tool-options">
+              <fieldset>
+                <legend>Detect &amp; remove</legend>
+                {(Object.keys(PII_PATTERNS) as PiiPatternId[]).map((id) => (
+                  <label key={id} className="checkbox-field">
+                    <input
+                      type="checkbox"
+                      checked={piiPatterns.has(id)}
+                      onChange={(e) => {
+                        setPiiPatterns((prev) => {
+                          const next = new Set(prev)
+                          if (e.target.checked) next.add(id)
+                          else next.delete(id)
+                          return next
+                        })
+                      }}
+                    />
+                    {PII_PATTERNS[id].label}
+                  </label>
+                ))}
+              </fieldset>
+              <label className="field">
+                <span>Custom pattern (optional)</span>
+                <input
+                  type="text"
+                  value={customRegex}
+                  onChange={(e) => setCustomRegex(e.target.value)}
+                  placeholder="Regular expression, e.g. \bINV-\d+\b"
+                />
+                <small>
+                  Matches are rasterised out irreversibly — nothing redacted can be selected,
+                  searched or recovered.
+                </small>
+              </label>
+            </div>
+          )}
+
+          {tool.id === 'pdf-to-word' && (
+            <div className="tool-options">
+              <p className="ocr-note">
+                Converts the PDF's text into an editable Word (.docx) document, entirely on your
+                device. Layout is simplified to flowing paragraphs. Scanned PDFs need OCR first.
+              </p>
             </div>
           )}
 

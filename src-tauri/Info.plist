@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Merged into the macOS app bundle's Info.plist by Tauri. Required so the
+         Scan-to-PDF tool can open the camera via getUserMedia. -->
+    <key>NSCameraUsageDescription</key>
+    <string>thepdf.ink uses the camera only to scan documents into a PDF on your device. Photos are processed locally and never uploaded.</string>
+</dict>
+</plist>

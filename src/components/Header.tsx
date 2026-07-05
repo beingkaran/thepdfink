@@ -1,8 +1,16 @@
-import { Shield } from 'lucide-react'
+import { Shield, KeyRound, LogOut } from 'lucide-react'
 import { isTauri } from '../lib/platform'
 import { BrandMark } from './BrandMark'
 
-export function Header() {
+interface HeaderProps {
+  admin: boolean
+  /** Show the (hidden-by-default) admin login entry point. */
+  showAdminEntry: boolean
+  onOpenAdmin: () => void
+  onLogout: () => void
+}
+
+export function Header({ admin, showAdminEntry, onOpenAdmin, onLogout }: HeaderProps) {
   const offline = isTauri()
 
   return (
@@ -14,9 +22,33 @@ export function Header() {
           <span className="logo-tld">.ink</span>
         </span>
       </a>
-      <div className="header-badge">
-        <Shield size={14} aria-hidden />
-        <span>{offline ? '100% offline · No uploads' : '100% client-side · No uploads'}</span>
+
+      <div className="header-right">
+        {admin ? (
+          <div className="admin-pill">
+            <KeyRound size={13} aria-hidden />
+            <span>Admin</span>
+            <button type="button" className="admin-logout" onClick={onLogout} aria-label="Sign out of admin">
+              <LogOut size={13} aria-hidden />
+            </button>
+          </div>
+        ) : (
+          showAdminEntry && (
+            <button
+              type="button"
+              className="admin-entry"
+              onClick={onOpenAdmin}
+              aria-label="Admin sign in"
+              title="Admin sign in (local testing)"
+            >
+              <KeyRound size={15} aria-hidden />
+            </button>
+          )
+        )}
+        <div className="header-badge">
+          <Shield size={14} aria-hidden />
+          <span>{offline ? '100% offline · No uploads' : '100% client-side · No uploads'}</span>
+        </div>
       </div>
     </header>
   )

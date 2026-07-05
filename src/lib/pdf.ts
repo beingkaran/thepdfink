@@ -258,6 +258,106 @@ export async function redactTextSecure(
   return { bytes: await out.save({ useObjectStreams: true }), matches }
 }
 
+/**
+ * Built-in PII detectors for Auto-Redact. Each pattern is global so we can count
+ * every occurrence on a line. Kept intentionally conservative to limit false
+ * positives on ordinary numbers.
+ */
+export type PiiPatternId = 'email' | 'phone' | 'ssn' | 'creditCard'
+
+export const PII_PATTERNS: Record<PiiPatternId, { label: string; regex: RegExp }> = {
+  email: {
+    label: 'Email addresses',
+    regex: /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g,
+  },
+  phone: {
+    label: 'Phone numbers',
+    regex: /(?:\+?\d{1,3}[\s.-]?)?(?:\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}\b/g,
+  },
+  ssn: {
+    label: 'US Social Security numbers',
+    regex: /\b\d{3}-\d{2}-\d{4}\b/g,
+  },
+  creditCard: {
+    label: 'Credit-card numbers',
+    regex: /\b(?:\d[ -]?){13,16}\b/g,
+  },
+}
+
+/** Build a single matcher from selected built-in patterns plus an optional custom regex. */
+function buildPiiMatchers(
+  patternIds: PiiPatternId[],
+  customRegex?: string,
+): RegExp[] {
+  const matchers = patternIds.map((id) => new RegExp(PII_PATTERNS[id].regex.source, 'gi'))
+  if (customRegex && customRegex.trim()) {
+    try {
+      matchers.push(new RegExp(customRegex, 'gi'))
+    } catch {
+      // Ignore an invalid custom pattern rather than failing the whole run.
+    }
+  }
+  return matchers
+}
+
+/**
+ * Auto-redaction: scans the text layer for PII (or a custom pattern) and burns
+ * matched spans out of a rasterised copy — the same irreversible technique as
+ * {@link redactTextSecure}, so nothing matched can be selected or recovered.
+ */
+export async function redactPatternsSecure(
+  file: File,
+  patternIds: PiiPatternId[],
+  customRegex?: string,
+): Promise<{ bytes: Uint8Array; matches: number }> {
+  const matchers = buildPiiMatchers(patternIds, customRegex)
+  if (!matchers.length) throw new Error('Select at least one thing to redact.')
+
+  const bytes = await readPdfFile(file)
+  const pdf = await pdfjs.getDocument({ data: bytes.slice() }).promise
+  const out = await PDFDocument.create()
+  const scale = 2
+  let matches = 0
+
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i)
+    const vp1 = page.getViewport({ scale: 1 })
+    const viewport = page.getViewport({ scale })
+    const canvas = document.createElement('canvas')
+    canvas.width = viewport.width
+    canvas.height = viewport.height
+    const ctx = canvas.getContext('2d')!
+    await page.render({ canvasContext: ctx, viewport, canvas }).promise
+
+    const textContent = await page.getTextContent()
+    ctx.fillStyle = '#000000'
+    for (const item of textContent.items) {
+      if (!('str' in item)) continue
+      const t = item as { str: string; transform: number[]; width?: number; height?: number }
+      const hit = matchers.some((re) => {
+        re.lastIndex = 0
+        return re.test(t.str)
+      })
+      if (!hit) continue
+      matches++
+      const e = t.transform[4]
+      const f = t.transform[5]
+      const w = (t.width ?? t.str.length * 6) * scale
+      const h = (t.height ?? 12) * scale
+      const pad = 2 * scale
+      const xPx = e * scale - pad
+      const yTop = (vp1.height - f) * scale - h - pad
+      ctx.fillRect(xPx, yTop, w + pad * 2, h + pad * 2)
+    }
+
+    const png = await out.embedPng(await canvasToPngBytes(canvas))
+    const outPage = out.addPage([vp1.width, vp1.height])
+    outPage.drawImage(png, { x: 0, y: 0, width: vp1.width, height: vp1.height })
+  }
+
+  return { bytes: await out.save({ useObjectStreams: true }), matches }
+}
+
 function escapeRegex(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }

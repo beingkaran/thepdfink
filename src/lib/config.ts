@@ -45,3 +45,26 @@ export function checkoutFor(planId: 'free' | 'personal' | 'pro' | 'business'): s
 /** Google AdSense publisher id (e.g. "ca-pub-1234567890123456"). Empty = ads off. */
 export const ADSENSE_CLIENT =
   (import.meta.env.VITE_ADSENSE_CLIENT as string | undefined) || ''
+
+/** The platforms the native app ships on. */
+export type PlatformId = 'macos' | 'windows' | 'linux' | 'ios' | 'android'
+
+/**
+ * Direct download / store links per platform.
+ *
+ * Point these at your hosted installers (GitHub Releases, R2, etc.) or the App
+ * Store / Google Play listings via the VITE_DOWNLOAD_URL_* env vars. Until a link
+ * is set it falls back to /pricing, so buttons route to purchase instead of 404ing.
+ */
+export const DOWNLOAD_URLS: Record<PlatformId, string> = {
+  macos: (import.meta.env.VITE_DOWNLOAD_URL_MACOS as string | undefined) || '/pricing',
+  windows: (import.meta.env.VITE_DOWNLOAD_URL_WINDOWS as string | undefined) || '/pricing',
+  linux: (import.meta.env.VITE_DOWNLOAD_URL_LINUX as string | undefined) || '/pricing',
+  ios: (import.meta.env.VITE_DOWNLOAD_URL_IOS as string | undefined) || '/pricing',
+  android: (import.meta.env.VITE_DOWNLOAD_URL_ANDROID as string | undefined) || '/pricing',
+}
+
+/** True when a real download link has been configured for a platform. */
+export function hasDownloadLink(id: PlatformId): boolean {
+  return DOWNLOAD_URLS[id] !== '/pricing'
+}
