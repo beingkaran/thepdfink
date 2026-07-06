@@ -1,6 +1,12 @@
 {
-  "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "thepdf-ink",
-  "compatibility_date": "2026-07-04",
-  "pages_build_output_dir": "dist"
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "thepdf-ink",
+	"compatibility_date": "2026-07-04",
+	"pages_build_output_dir": "dist",
+	"kv_namespaces": [
+		{
+			"binding": "EVENTS_KV",
+			"id": "e5dad022067b43fb948f7b3343c80165"
+		}
+	]
 }
