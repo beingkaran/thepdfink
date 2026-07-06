@@ -1,4 +1,4 @@
-import { Coffee, ArrowDown, Download } from 'lucide-react'
+import { Coffee, ArrowDown } from 'lucide-react'
 import { tools } from '../data/tools'
 import { PRICE_USD } from '../lib/config'
 import { isTauri } from '../lib/platform'
@@ -21,11 +21,7 @@ export function Hero() {
 
       {!native && (
         <div className="hero-cta">
-          <a className="btn btn-primary" href="#download">
-            <Download size={18} aria-hidden />
-            Download the app
-          </a>
-          <a className="btn btn-ghost" href="#tools">
+          <a className="btn btn-primary" href="#tools">
             <ArrowDown size={18} aria-hidden />
             Use the free web tools
           </a>

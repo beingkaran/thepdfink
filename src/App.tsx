@@ -12,7 +12,6 @@ import { ScanPanel } from './components/ScanPanel'
 import { EditPanel } from './components/EditPanel'
 import { FormBuilderPanel } from './components/FormBuilderPanel'
 import { AskPanel } from './components/AskPanel'
-import { Downloads } from './components/Downloads'
 import { Pricing } from './components/Pricing'
 import { Footer } from './components/Footer'
 import { AdminLogin } from './components/AdminLogin'
@@ -82,7 +81,6 @@ function App() {
       <main>
         <Hero />
         <ToolGrid onSelect={setActiveTool} fullAccess={fullAccess} />
-        {!native && <Downloads />}
         {!native && !fullAccess && <Pricing />}
       </main>
       <Footer />

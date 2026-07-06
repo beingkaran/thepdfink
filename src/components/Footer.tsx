@@ -8,7 +8,6 @@ export function Footer() {
     <footer className="site-footer">
       {!native && (
         <nav className="footer-links" aria-label="Footer">
-          <a href="/#download">Download</a>
           <a href="/tools">All PDF tools</a>
           <a href="/pricing">Pricing</a>
           <a href="/about">About</a>
