@@ -8,7 +8,7 @@
  * GO-LIVE: set your AdSense publisher id below (also in each page's <ins> unit).
  */
 (function () {
-  var ADSENSE_CLIENT = 'ca-pub-XXXXXXXXXXXXXXXX'
+  var ADSENSE_CLIENT = 'ca-pub-9454848033838064'
   var KEY = 'tpi-consent'
 
   function loadAds() {
