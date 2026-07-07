@@ -25,7 +25,7 @@ export function Footer() {
         © {year} thepdf.ink ·{' '}
         {native
           ? 'Native app for macOS, Windows, iOS & Android. Built for privacy.'
-          : 'One-time $9 unlock — yours forever, on every platform.'}
+          : 'Free web tools · One-time $19 Pro unlock — yours forever.'}
       </p>
     </footer>
   )

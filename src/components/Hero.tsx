@@ -1,9 +1,9 @@
-import { Coffee, ArrowDown } from 'lucide-react'
+import { Sparkles, ArrowDown } from 'lucide-react'
 import { tools } from '../data/tools'
 import { PRICE_USD } from '../lib/config'
 import { isTauri } from '../lib/platform'
 
-export function Hero() {
+export function Hero({ isPro = false }: { isPro?: boolean }) {
   const native = isTauri()
 
   return (
@@ -23,12 +23,14 @@ export function Hero() {
         <div className="hero-cta">
           <a className="btn btn-primary" href="#tools">
             <ArrowDown size={18} aria-hidden />
-            Use the free web tools
+            {isPro ? 'Open your tools' : 'Use the free web tools'}
           </a>
-          <a className="btn btn-ghost" href="#pricing">
-            <Coffee size={18} aria-hidden />
-            Plans — from ${PRICE_USD}
-          </a>
+          {!isPro && (
+            <a className="btn btn-ghost" href="#pricing">
+              <Sparkles size={18} aria-hidden />
+              Unlock Pro — ${PRICE_USD}
+            </a>
+          )}
         </div>
       )}
 
@@ -42,8 +44,8 @@ export function Hero() {
           <span>uploads</span>
         </div>
         <div>
-          <strong>${PRICE_USD}</strong>
-          <span>once, forever</span>
+          <strong>{isPro ? '✓' : `$${PRICE_USD}`}</strong>
+          <span>{isPro ? 'Pro unlocked' : 'Pro · lifetime'}</span>
         </div>
       </div>
     </section>

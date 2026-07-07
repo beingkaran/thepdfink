@@ -3,7 +3,7 @@ import { tools, type Tool } from '../data/tools'
 
 interface ToolGridProps {
   onSelect: (tool: Tool) => void
-  /** When true, Pro tools are shown as unlocked (paid native app or admin). */
+  /** When true, Pro tools are shown as unlocked (paid account, native app, or admin). */
   fullAccess?: boolean
 }
 
@@ -30,13 +30,13 @@ function ToolCard({
         </div>
         {tool.soon ? (
           <span className="tool-tag tool-tag-soon">Soon</span>
+        ) : locked ? (
+          <span className="tool-tag">
+            <Lock size={11} aria-hidden /> Pro
+          </span>
         ) : tool.pro && fullAccess ? (
           <span className="tool-tag tool-tag-unlocked">
             <Check size={11} aria-hidden /> Unlocked
-          </span>
-        ) : tool.pro ? (
-          <span className="tool-tag">
-            <Lock size={11} aria-hidden /> Pro
           </span>
         ) : null}
       </div>
@@ -49,6 +49,23 @@ function ToolCard({
 export function ToolGrid({ onSelect, fullAccess }: ToolGridProps) {
   const freeTools = tools.filter((t) => !t.pro)
   const proTools = tools.filter((t) => t.pro)
+
+  // Paid/logged-in users get one unified grid — no separate upsell section.
+  if (fullAccess) {
+    return (
+      <section className="tools-section" id="tools">
+        <div className="section-head">
+          <h2>Choose a tool</h2>
+          <p>Every tool is unlocked on your account. All processing happens on your device.</p>
+        </div>
+        <div className="tool-grid">
+          {[...freeTools, ...proTools].map((tool) => (
+            <ToolCard key={tool.id} tool={tool} onSelect={onSelect} fullAccess />
+          ))}
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="tools-section" id="tools">
@@ -64,18 +81,9 @@ export function ToolGrid({ onSelect, fullAccess }: ToolGridProps) {
 
       <div className="section-head section-head-pro">
         <h2>
-          Pro tools{' '}
-          {fullAccess ? (
-            <span className="pro-chip">Unlocked</span>
-          ) : (
-            <span className="pro-chip">$29 · lifetime</span>
-          )}
+          Pro tools <span className="pro-chip">$19 · lifetime</span>
         </h2>
-        <p>
-          {fullAccess
-            ? 'Included with your access — every power tool is unlocked on this device.'
-            : 'Power features for heavy documents. Included with Pro and Business.'}
-        </p>
+        <p>Power features for heavy documents. Unlock them all with a one-time Pro account.</p>
       </div>
       <div className="tool-grid">
         {proTools.map((tool) => (

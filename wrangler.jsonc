@@ -7,6 +7,10 @@
 		{
 			"binding": "EVENTS_KV",
 			"id": "e5dad022067b43fb948f7b3343c80165"
+		},
+		{
+			"binding": "USERS_KV",
+			"id": "7c825ade3ac44c0c92ffeaa95756af13"
 		}
 	]
 }

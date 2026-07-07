@@ -47,7 +47,7 @@ export type ToolId =
   | 'edit'
   | 'auto-redact'
   | 'form-builder'
-  // Pro tools (unlocked with the $29 tier)
+  // Pro tools (unlocked with the $19 tier)
   | 'ocr'
   | 'batch'
   | 'ai-summarize'

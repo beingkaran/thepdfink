@@ -1,17 +1,45 @@
 /* Shared styling for thepdf.ink static content pages (legal, about, pricing). */
 :root {
-  --ink: #1a1f2e;
-  --ink-muted: #415a77;
-  --paper: #f8f5ef;
-  --paper-deep: #ede8df;
-  --accent: #2b7ba6;
-  --accent-soft: rgba(43, 123, 166, 0.1);
-  --brand-magenta: #c74984;
-  --border: rgba(26, 31, 46, 0.12);
-  --radius: 12px;
-  --radius-sm: 8px;
-  --display: 'Fraunces', Georgia, serif;
-  --body: 'Source Sans 3', system-ui, sans-serif;
+  color-scheme: dark;
+  --ink: #edf0f4;
+  --ink-muted: #8593a6;
+  --paper: #000814;
+  --paper-deep: #06111f;
+  --card: #0a1b30;
+  --surface: rgba(255, 255, 255, 0.03);
+  --surface-hover: rgba(255, 255, 255, 0.06);
+  --accent: #ef7bae;
+  --accent-strong: #e15d97;
+  --accent-soft: rgba(239, 123, 174, 0.13);
+  --cyan: #54b2e6;
+  --brand-magenta: #ef7bae;
+  --on-accent: #08131f;
+  --border: #16273f;
+  --border-strong: #20415e;
+  --radius: 4px;
+  --radius-sm: 3px;
+  --display: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --body: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+  --ink: #121212;
+  --ink-muted: #676767;
+  --paper: #f6f6f6;
+  --paper-deep: #ffffff;
+  --card: #ffffff;
+  --surface: rgba(18, 18, 18, 0.02);
+  --surface-hover: rgba(18, 18, 18, 0.05);
+  --accent: #bb3b80;
+  --accent-strong: #92225f;
+  --accent-soft: rgba(187, 59, 128, 0.09);
+  --cyan: #005689;
+  --brand-magenta: #bb3b80;
+  --on-accent: #ffffff;
+  --border: #dcdcdc;
+  --border-strong: #c2c2c2;
 }
 
 * { box-sizing: border-box; }
@@ -95,7 +123,7 @@ li { margin: 6px 0; }
 hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
 .card {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 28px;
@@ -108,16 +136,17 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
   gap: 8px;
   padding: 13px 24px;
   border-radius: var(--radius-sm);
-  background: var(--ink);
-  color: #fff;
+  background: var(--accent);
+  color: var(--on-accent);
   text-decoration: none;
   font-weight: 600;
   border: 1px solid transparent;
 }
 
-.btn:hover { background: #2a3145; }
+.btn:hover { background: var(--accent-strong); }
 
-.btn-ghost { background: #fff; color: var(--ink); border-color: var(--border); }
+.btn-ghost { background: var(--surface); color: var(--ink); border-color: var(--border-strong); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
 
 .price-row {
   display: flex;
@@ -176,29 +205,30 @@ code { background: var(--paper-deep); padding: 1px 6px; border-radius: 4px; font
 /* Tiered pricing grid (static pages) */
 .plan-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
   align-items: start;
   margin: 28px 0;
+  max-width: 620px;
 }
 .plan {
   position: relative;
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 22px 18px;
   display: flex;
   flex-direction: column;
 }
-.plan.featured { border-color: var(--accent); box-shadow: 0 18px 50px rgba(43,123,166,0.18); }
+.plan.featured { border-color: var(--accent); box-shadow: 0 12px 34px rgba(0,0,0,0.5); }
 .plan.featured::before {
   content: ''; position: absolute; inset: 0 0 auto 0; height: 4px;
   border-radius: var(--radius) var(--radius) 0 0;
-  background: linear-gradient(135deg,#225c71,#356f93,#5c5d94,#9c4c8d,#c74984);
+  background: linear-gradient(120deg,#54b2e6,#ef7bae);
 }
 .plan .badge {
   position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
-  background: var(--accent); color: #fff; font-size: 0.68rem; font-weight: 700;
+  background: var(--accent); color: var(--on-accent); font-size: 0.68rem; font-weight: 700;
   letter-spacing: 0.04em; text-transform: uppercase; padding: 4px 12px; border-radius: 999px; white-space: nowrap;
 }
 .plan h3 { font-family: var(--display); font-size: 1.25rem; margin: 4px 0 4px; }
@@ -254,7 +284,7 @@ code { background: var(--paper-deep); padding: 1px 6px; border-radius: 4px; font
 .related-grid li { margin: 0; }
 .related-grid a {
   display: block;
-  background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
   padding: 14px 16px; text-decoration: none; color: var(--ink); height: 100%;
 }
 .related-grid a:hover { border-color: var(--accent); }

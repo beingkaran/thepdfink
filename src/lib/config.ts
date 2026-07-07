@@ -14,32 +14,16 @@ export const BRAND = {
   email: 'hello@thepdf.ink',
 } as const
 
-/** Entry (Personal) one-time price, in USD. Used for hero copy. */
-export const PRICE_USD = 9
+/** The one-time Pro price, in USD. Used for hero copy and CTAs. */
+export const PRICE_USD = 19
 
-/**
- * Hosted checkout links for each one-time tier.
+/** Resolve the destination link for a given plan id.
  *
- * Drop in a Gumroad / Lemon Squeezy / Ko-fi / Stripe Payment Link per tier. Until
- * a link is set, the buy buttons fall back to /pricing so nothing 404s.
+ * Free routes to the tools; Pro is sold through the in-app account flow
+ * (sign in → Lemon Squeezy checkout), so its card renders a button, not this link.
  */
-export const CHECKOUT_URLS = {
-  personal:
-    (import.meta.env.VITE_CHECKOUT_URL_PERSONAL as string | undefined) ||
-    (import.meta.env.VITE_CHECKOUT_URL as string | undefined) ||
-    '/pricing',
-  pro: (import.meta.env.VITE_CHECKOUT_URL_PRO as string | undefined) || '/pricing',
-  business:
-    (import.meta.env.VITE_CHECKOUT_URL_BUSINESS as string | undefined) || '/pricing',
-} as const
-
-/** Back-compat: the Personal ($9) checkout link. */
-export const CHECKOUT_URL = CHECKOUT_URLS.personal
-
-/** Resolve the destination link for a given plan id. */
-export function checkoutFor(planId: 'free' | 'personal' | 'pro' | 'business'): string {
-  if (planId === 'free') return '#tools'
-  return CHECKOUT_URLS[planId]
+export function checkoutFor(planId: 'free' | 'pro'): string {
+  return planId === 'free' ? '#tools' : '#pricing'
 }
 
 /** Google AdSense publisher id (e.g. "ca-pub-1234567890123456"). Empty = ads off. */

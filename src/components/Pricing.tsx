@@ -2,9 +2,12 @@ import { Check, Coffee } from 'lucide-react'
 import { plans, type Plan } from '../data/plans'
 import { checkoutFor } from '../lib/config'
 
-function PlanCard({ plan }: { plan: Plan }) {
+function PlanCard({ plan, onUnlockPro }: { plan: Plan; onUnlockPro?: () => void }) {
   const href = checkoutFor(plan.id)
   const free = plan.price === 0
+  // Pro is sold through the in-app account flow (sign in → Lemon Squeezy
+  // checkout), not a hosted checkout link.
+  const proFlow = plan.id === 'pro' && onUnlockPro
 
   return (
     <div className={`plan${plan.highlight ? ' plan-featured' : ''}`}>
@@ -24,13 +27,20 @@ function PlanCard({ plan }: { plan: Plan }) {
         <span className="plan-period">{plan.priceNote}</span>
       </div>
 
-      <a
-        className={`btn ${plan.highlight ? 'btn-primary' : 'btn-ghost'}`}
-        href={href}
-      >
-        {plan.highlight && <Coffee size={16} aria-hidden />}
-        {plan.cta}
-      </a>
+      {proFlow ? (
+        <button
+          type="button"
+          className={`btn ${plan.highlight ? 'btn-primary' : 'btn-ghost'}`}
+          onClick={onUnlockPro}
+        >
+          {plan.cta}
+        </button>
+      ) : (
+        <a className={`btn ${plan.highlight ? 'btn-primary' : 'btn-ghost'}`} href={href}>
+          {plan.highlight && <Coffee size={16} aria-hidden />}
+          {plan.cta}
+        </a>
+      )}
 
       <p className="plan-lead">{plan.featuresLead}</p>
       <ul className="plan-features">
@@ -48,22 +58,23 @@ function PlanCard({ plan }: { plan: Plan }) {
   )
 }
 
-export function Pricing() {
+export function Pricing({ onUnlockPro }: { onUnlockPro?: () => void }) {
   return (
     <section className="pricing" id="pricing" aria-labelledby="pricing-title">
       <div className="section-head pricing-head">
         <p className="hero-eyebrow">Pay once · No subscription</p>
         <h2 id="pricing-title">Pay once. Yours forever.</h2>
         <p>
-          The web tools are free. Unlock the offline apps for the price of a coffee — then step up
-          to Pro or Business only if you need the power tools. No monthly fees, ever.
+          The everyday tools are free. Unlock Pro once to add OCR, batch processing, secure
+          redaction and on-device AI — yours forever, on every browser you sign in to. No
+          subscription, ever.
         </p>
         <p className="pricing-launch">🎉 Launch pricing — lock in the lower price today.</p>
       </div>
 
       <div className="plan-grid">
         {plans.map((plan) => (
-          <PlanCard key={plan.id} plan={plan} />
+          <PlanCard key={plan.id} plan={plan} onUnlockPro={onUnlockPro} />
         ))}
       </div>
 

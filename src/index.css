@@ -1,32 +1,75 @@
 :root {
-  --ink: #1a1f2e;
-  --ink-muted: #415a77;
-  --paper: #f8f5ef;
-  --paper-deep: #ede8df;
-  --accent: #2b7ba6;
-  --accent-soft: rgba(43, 123, 166, 0.1);
-  --brand-magenta: #c74984;
-  --brand-gradient: linear-gradient(135deg, #225c71 0%, #356f93 30%, #5c5d94 58%, #9c4c8d 80%, #c74984 100%);
-  --success: #2d6a4f;
-  --success-soft: rgba(45, 106, 79, 0.1);
-  --error: #9d0208;
-  --error-soft: rgba(157, 2, 8, 0.08);
-  --border: rgba(26, 31, 46, 0.12);
-  --shadow: 0 18px 50px rgba(26, 31, 46, 0.12);
-  --radius: 12px;
-  --radius-sm: 8px;
+  color-scheme: dark;
+  /* ── Glancer "AI Intelligence Desk" reskin ───────────────────────────────
+     Deep ink surfaces, hairline rules, no glass/glow. Pink primary + cyan
+     secondary. Newsreader serif headlines, IBM Plex Sans body, mono labels. */
+  --ink: #edf0f4;
+  --ink-muted: #8593a6;
+  --faint: #586778;
+  --paper: #000814;
+  --paper-deep: #06111f;
+  --card: #0a1b30;
+  --card-2: #0d2136;
+  --surface: rgba(255, 255, 255, 0.03);
+  --surface-hover: rgba(255, 255, 255, 0.06);
+  --accent: #ef7bae;
+  --accent-strong: #e15d97;
+  --accent-soft: rgba(239, 123, 174, 0.13);
+  --cyan: #54b2e6;
+  --cyan-soft: rgba(84, 178, 230, 0.13);
+  --brand-magenta: #ef7bae;
+  --brand-gradient: linear-gradient(120deg, #54b2e6 0%, #ef7bae 100%);
+  --on-accent: #08131f;
+  --success: #3ddc97;
+  --success-soft: rgba(61, 220, 151, 0.14);
+  --error: #ff6b6b;
+  --error-soft: rgba(255, 107, 107, 0.13);
+  --border: #16273f;
+  --border-strong: #20415e;
+  --shadow: 0 12px 34px rgba(0, 0, 0, 0.5);
+  --radius: 4px;
+  --radius-sm: 3px;
 
-  --display: 'Fraunces', Georgia, serif;
-  --body: 'Source Sans 3', system-ui, sans-serif;
+  --display: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --body: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   font-family: var(--body);
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--ink);
   background: var(--paper);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+  --ink: #121212;
+  --ink-muted: #676767;
+  --faint: #8d8d8d;
+  --paper: #f6f6f6;
+  --paper-deep: #ffffff;
+  --card: #ffffff;
+  --card-2: #f6f6f6;
+  --surface: rgba(18, 18, 18, 0.02);
+  --surface-hover: rgba(18, 18, 18, 0.05);
+  --accent: #bb3b80;
+  --accent-strong: #92225f;
+  --accent-soft: rgba(187, 59, 128, 0.09);
+  --cyan: #005689;
+  --cyan-soft: rgba(0, 86, 137, 0.09);
+  --brand-magenta: #bb3b80;
+  --brand-gradient: linear-gradient(120deg, #005689 0%, #bb3b80 100%);
+  --on-accent: #ffffff;
+  --success: #2d6a4f;
+  --success-soft: rgba(45, 106, 79, 0.1);
+  --error: #9d0208;
+  --error-soft: rgba(157, 2, 8, 0.08);
+  --border: #dcdcdc;
+  --border-strong: #c2c2c2;
+  --shadow: 0 6px 20px rgba(18, 18, 18, 0.08);
 }
 
 *,
@@ -193,7 +236,7 @@ button:disabled {
 
 .tool-card {
   text-align: left;
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 20px;
@@ -276,7 +319,7 @@ button:disabled {
 }
 
 .modal {
-  background: #fff;
+  background: var(--card);
   border-radius: var(--radius);
   width: 100%;
   max-width: 640px;
@@ -429,12 +472,12 @@ button:disabled {
 }
 
 .btn.primary {
-  background: var(--ink);
-  color: #fff;
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 .btn.primary:hover:not(:disabled) {
-  background: #2a3145;
+  background: var(--accent-strong);
 }
 
 .icon-btn {
@@ -445,7 +488,7 @@ button:disabled {
   height: 36px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--card);
   color: var(--ink);
   flex-shrink: 0;
 }
@@ -488,7 +531,7 @@ button:disabled {
   padding: 10px 12px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--card);
 }
 
 .field input:focus,
@@ -576,7 +619,7 @@ legend {
 
 .page-thumb {
   aspect-ratio: 3/4;
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: 4px;
   overflow: hidden;
@@ -595,7 +638,7 @@ legend {
   background: linear-gradient(
     90deg,
     var(--paper-deep) 25%,
-    #fff 50%,
+    var(--surface-hover) 50%,
     var(--paper-deep) 75%
   );
   background-size: 200% 100%;
@@ -649,7 +692,7 @@ legend {
 }
 
 .viewer-tab.active {
-  background: #fff;
+  background: var(--card);
   border-bottom-color: #fff;
   position: relative;
   z-index: 1;
@@ -774,7 +817,7 @@ legend {
   padding: 8px 12px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--card);
   font-size: 0.85rem;
   font-weight: 500;
 }
@@ -870,7 +913,7 @@ legend {
   width: 100%;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--card);
   touch-action: none;
   cursor: crosshair;
 }
@@ -883,7 +926,7 @@ legend {
   font-size: 0.75rem;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--card);
 }
 
 .sig-upload {
@@ -927,7 +970,7 @@ legend {
   padding: 10px 12px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--card);
 }
 
 .checkbox-field {
@@ -976,24 +1019,25 @@ legend {
 }
 
 .btn-primary {
-  background: var(--ink);
-  color: #fff;
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 .btn-primary:hover {
-  background: #2a3145;
+  background: var(--accent-strong);
   transform: translateY(-2px);
   box-shadow: var(--shadow);
 }
 
 .btn-ghost {
-  background: #fff;
+  background: var(--surface);
   color: var(--ink);
-  border-color: var(--border);
+  border-color: var(--border-strong);
 }
 
 .btn-ghost:hover {
-  border-color: var(--ink-muted);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .btn-lg {
@@ -1019,7 +1063,7 @@ legend {
   grid-template-columns: 1.5fr 1fr;
   gap: 40px;
   align-items: center;
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 40px;
@@ -1178,7 +1222,7 @@ legend {
 
 .plan {
   position: relative;
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 24px 22px;
@@ -1371,7 +1415,7 @@ legend {
 }
 
 .tool-card-pro {
-  background: linear-gradient(180deg, #fff 0%, #fbfcfe 100%);
+  background: var(--surface);
   border-style: dashed;
 }
 
@@ -1470,7 +1514,7 @@ legend {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 10px 12px;
-  background: #fff;
+  background: var(--card);
   color: var(--ink);
 }
 
@@ -1483,7 +1527,7 @@ legend {
   padding: 9px 12px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--card);
   color: var(--ink-muted);
   font-weight: 600;
   font-size: 0.9rem;
@@ -1507,14 +1551,14 @@ legend {
   align-items: center;
   gap: 5px;
   border: 1px solid var(--border);
-  background: #fff;
+  background: var(--card);
   border-radius: 999px;
   padding: 4px 12px;
   font-size: 0.8rem;
   color: var(--ink);
 }
 .summary-text {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 4px 16px;
@@ -1776,6 +1820,76 @@ legend {
   gap: 4px;
 }
 
+/* ── Accounts / Pro checkout ─────────────────────────────── */
+.btn-signin {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.btn-signin:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.account-pill .account-email {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.account-pro {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--success);
+  background: var(--success-soft);
+  border-radius: 999px;
+  padding: 2px 7px;
+}
+.auth-switch {
+  margin: 0;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+}
+.auth-switch-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+}
+.auth-switch-btn:hover {
+  text-decoration: underline;
+}
+.checkout-banner {
+  padding: 10px 16px;
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-bottom: 1px solid var(--border);
+}
+.checkout-banner.is-success {
+  color: var(--success);
+  background: var(--success-soft);
+}
+
 /* ── Ask AI (chat) ───────────────────────────────────────── */
 .ask-modal .modal-body {
   display: flex;
@@ -1838,7 +1952,7 @@ legend {
 }
 .ask-suggest button {
   border: 1px solid var(--border);
-  background: #fff;
+  background: var(--card);
   color: var(--ink);
   border-radius: 999px;
   padding: 7px 14px;
@@ -1902,7 +2016,7 @@ legend {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   font: inherit;
-  background: #fff;
+  background: var(--card);
   color: var(--ink);
 }
 .ask-input-row input:focus { outline: 2px solid var(--accent); border-color: transparent; }
@@ -1937,7 +2051,7 @@ legend {
   width: 52px;
   height: 52px;
   border-radius: 12px;
-  background: #fff;
+  background: var(--card);
   color: var(--accent);
   flex-shrink: 0;
 }
@@ -1959,8 +2073,8 @@ legend {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--ink);
-  color: #fff;
+  background: var(--accent);
+  color: var(--on-accent);
   font-weight: 600;
   font-size: 0.9rem;
   padding: 10px 16px;
@@ -2091,3 +2205,164 @@ legend {
 @media (max-width: 420px) {
   .download-grid { grid-template-columns: 1fr 1fr; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Glancer "AI Intelligence Desk" reskin — finishing layer
+   Mono kickers, hairline cards, sharp geometry, pink+cyan on deep ink.
+   Rules here intentionally override earlier same-specificity declarations.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+body {
+  background:
+    radial-gradient(1200px 600px at 50% -10%, rgba(84, 178, 230, 0.06), transparent 60%),
+    var(--paper);
+}
+
+/* Mono, uppercase kickers (Glancer's signature eyebrow) */
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  color: var(--accent);
+}
+
+/* Serif display headlines, tightened */
+.hero h1 { letter-spacing: -0.01em; }
+.hero h1 em { color: var(--accent); font-style: italic; }
+
+.section-head h2,
+.plan-name { letter-spacing: -0.01em; }
+
+/* Header: hairline rule, mono privacy badge */
+.site-header { border-bottom: 1px solid var(--border); }
+.logo { color: var(--ink); }
+.logo strong { color: var(--accent); }
+.logo-tld { color: var(--cyan); }
+.header-badge {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--ink-muted);
+}
+
+/* Theme toggle + admin entry: matched hairline square buttons */
+.theme-toggle,
+.admin-entry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: var(--transition, all 0.15s ease);
+}
+.theme-toggle:hover,
+.admin-entry:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  opacity: 1;
+}
+
+/* Tool cards — flat hairline panels that lift on hover */
+.tool-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+.tool-card:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+}
+.tool-icon {
+  background: var(--cyan-soft);
+  color: var(--cyan);
+  border-radius: var(--radius-sm);
+}
+.tool-card-pro {
+  background: var(--surface);
+  border-style: dashed;
+  border-color: var(--border-strong);
+}
+
+/* Tags/chips — mono, pill */
+.tool-tag,
+.pro-chip {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.tool-tag { color: var(--accent); background: var(--accent-soft); }
+.tool-tag-unlocked { color: var(--success); background: var(--success-soft); }
+.tool-tag-soon { color: var(--cyan); background: var(--cyan-soft); }
+.pro-chip {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-soft);
+  padding: 3px 9px;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
+/* Two-tier pricing — centered pair */
+.plan-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 720px;
+  margin: 0 auto;
+  gap: 18px;
+}
+.plan {
+  background: var(--surface);
+  border-color: var(--border);
+}
+.plan-featured {
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+}
+.plan-amount { font-family: var(--display); }
+.plan-badge {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+@media (max-width: 620px) {
+  .plan-grid { grid-template-columns: 1fr; max-width: 420px; }
+}
+
+/* Hero stat numbers in serif */
+.hero-stats strong { font-family: var(--display); color: var(--ink); }
+.hero-stats span { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* Account pill + Pro badge on dark */
+.account-pill { background: var(--surface); border-color: var(--border-strong); color: var(--ink); }
+.account-pro { color: var(--success); background: var(--success-soft); }
+.btn-signin { border-color: var(--border-strong); color: var(--ink-muted); }
+.btn-signin:hover { color: var(--accent); border-color: var(--accent); }
+
+/* Modals — deep ink panels with hairline borders */
+.modal { background: var(--card); border: 1px solid var(--border-strong); }
+.modal-header { border-bottom: 1px solid var(--border); }
+.modal-footer { border-top: 1px solid var(--border); }
+.field input {
+  background: var(--paper-deep);
+  border: 1px solid var(--border-strong);
+  color: var(--ink);
+}
+.field input:focus { border-color: var(--accent); outline: none; }
+
+/* Footer hairline */
+.site-footer { border-top: 1px solid var(--border); }
+.footer-links a:hover { color: var(--accent); }
+
+/* Checkout banner */
+.checkout-banner { border-bottom: 1px solid var(--border); }

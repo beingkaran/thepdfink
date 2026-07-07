@@ -1,11 +1,12 @@
 import { useEffect } from 'react'
 import { X, Check, Sparkles } from 'lucide-react'
 import type { Tool } from '../data/tools'
-import { checkoutFor } from '../lib/config'
 
 interface UpgradePanelProps {
   tool: Tool
   onClose: () => void
+  /** Starts the sign-in → checkout flow. */
+  onUnlock: () => void
 }
 
 const PRO_PERKS = [
@@ -16,7 +17,7 @@ const PRO_PERKS = [
   'Everything in Personal, on every device',
 ]
 
-export function UpgradePanel({ tool, onClose }: UpgradePanelProps) {
+export function UpgradePanel({ tool, onClose, onUnlock }: UpgradePanelProps) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -71,17 +72,17 @@ export function UpgradePanel({ tool, onClose }: UpgradePanelProps) {
           </ul>
 
           <div className="upgrade-price">
-            <span className="upgrade-was">$49</span>
-            <span className="upgrade-amount">$29</span>
+            <span className="upgrade-was">$29</span>
+            <span className="upgrade-amount">$19</span>
             <span className="upgrade-note">once · lifetime · free updates</span>
           </div>
         </div>
 
         <footer className="modal-footer">
-          <a className="btn primary" href={checkoutFor('pro')}>
+          <button type="button" className="btn primary" onClick={onUnlock}>
             <Sparkles size={18} aria-hidden />
-            Unlock Pro — $29 forever
-          </a>
+            Unlock Pro — $19 forever
+          </button>
         </footer>
       </div>
     </div>

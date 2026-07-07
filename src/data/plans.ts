@@ -2,15 +2,16 @@
  * Pricing tiers — single source of truth for the homepage Pricing section.
  * The static /pricing.html page mirrors this structure.
  *
- * Model: one-time purchases only (no subscriptions). Free web tier funnels into
- * a $9 impulse tier, anchored by Pro ($29) and Business ($79).
+ * Model: two tiers only. A free, ad-supported web tier funnels into a single
+ * one-time Pro unlock ($19) that opens every tool — including OCR, batch,
+ * redaction and the on-device AI — tied to the user's account.
  */
 
-export type PlanId = 'free' | 'personal' | 'pro' | 'business'
+export type PlanId = 'free' | 'pro'
 
 export interface PlanFeature {
   label: string
-  /** Show a "Soon" badge for roadmap features (e.g. AI). */
+  /** Show a "Soon" badge for roadmap features (e.g. AI auto-fill). */
   soon?: boolean
 }
 
@@ -23,7 +24,7 @@ export interface Plan {
   regularPrice?: number
   priceNote: string
   tagline: string
-  /** Header line for the feature list, e.g. "Everything in Personal, plus:". */
+  /** Header line for the feature list, e.g. "Everything in Free, plus:". */
   featuresLead: string
   features: PlanFeature[]
   cta: string
@@ -38,67 +39,35 @@ export const plans: Plan[] = [
     name: 'Free',
     price: 0,
     priceNote: 'forever',
-    tagline: 'The web tools, in your browser.',
+    tagline: 'The everyday PDF tools, in your browser.',
     featuresLead: 'Includes:',
     features: [
-      { label: 'All 15 core tools on the web' },
-      { label: '100% client-side — no uploads' },
+      { label: 'All core tools — merge, split, convert & more' },
+      { label: '100% client-side — nothing is uploaded' },
       { label: 'No account required' },
       { label: 'Ad-supported' },
     ],
     cta: 'Use the free tools',
   },
   {
-    id: 'personal',
-    name: 'Personal',
-    price: 9,
-    regularPrice: 19,
-    priceNote: 'once · lifetime',
-    tagline: 'Buy me a coffee. Keep it forever.',
-    featuresLead: 'Everything in Free, plus:',
-    features: [
-      { label: 'Native apps — macOS, Windows, Linux, iOS & Android' },
-      { label: 'Fully offline, ad-free & tracking-free' },
-      { label: 'All 15 tools on every device' },
-      { label: 'Free updates, forever' },
-      { label: '1 user · personal use' },
-    ],
-    cta: 'Get Personal',
-    highlight: true,
-    badge: 'Most popular',
-  },
-  {
     id: 'pro',
     name: 'Pro',
-    price: 29,
-    regularPrice: 49,
+    price: 19,
+    regularPrice: 29,
     priceNote: 'once · lifetime',
-    tagline: 'For power users and heavy documents.',
-    featuresLead: 'Everything in Personal, plus:',
+    tagline: 'Every power tool, unlocked on your account.',
+    featuresLead: 'Everything in Free, plus:',
     features: [
       { label: 'OCR — make scanned PDFs searchable' },
       { label: 'Batch & bulk processing' },
       { label: 'Secure, irreversible redaction' },
       { label: 'AI: summarise & ask your PDF — on-device' },
+      { label: 'Ad-free, on every browser you sign in to' },
       { label: 'AI auto-fill forms', soon: true },
-      { label: 'Priority updates' },
+      { label: 'Free updates, forever' },
     ],
-    cta: 'Get Pro',
-  },
-  {
-    id: 'business',
-    name: 'Business',
-    price: 79,
-    priceNote: 'once · or $39/seat',
-    tagline: 'Commercial use, teams & invoicing.',
-    featuresLead: 'Everything in Pro, plus:',
-    features: [
-      { label: 'Commercial-use license' },
-      { label: 'Invoice & VAT receipt' },
-      { label: 'Priority email support' },
-      { label: 'Team & volume deployment' },
-      { label: 'Per-seat option available' },
-    ],
-    cta: 'Get Business',
+    cta: 'Unlock Pro — $19',
+    highlight: true,
+    badge: 'Best value',
   },
 ]

@@ -51,15 +51,15 @@
     bar.setAttribute('aria-label', 'Cookie consent')
     bar.style.cssText =
       'position:fixed;left:16px;right:16px;bottom:16px;max-width:720px;margin:0 auto;' +
-      'background:#0f1622;color:#eef2f8;border-radius:12px;padding:16px 18px;z-index:9999;' +
-      'box-shadow:0 18px 50px rgba(0,0,0,.35);font:14px/1.5 system-ui,sans-serif;' +
+      'background:#0a1b30;color:#edf0f4;border:1px solid #20415e;border-radius:4px;padding:16px 18px;z-index:9999;' +
+      'box-shadow:0 12px 34px rgba(0,0,0,.5);font:14px/1.5 "IBM Plex Sans",system-ui,sans-serif;' +
       'display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between'
 
     var msg = document.createElement('span')
     msg.style.cssText = 'flex:1;min-width:240px'
     msg.innerHTML =
       'We use cookies for advertising on our content pages. The PDF tools never track you. ' +
-      'See our <a href="/privacy" style="color:#7fc4e6">Privacy Policy</a>.'
+      'See our <a href="/privacy" style="color:#54b2e6">Privacy Policy</a>.'
 
     var actions = document.createElement('span')
     actions.style.cssText = 'display:flex;gap:8px;flex-shrink:0'
@@ -68,7 +68,7 @@
     decline.textContent = 'Decline'
     decline.style.cssText =
       'background:transparent;color:#cdd7e6;border:1px solid rgba(255,255,255,.25);' +
-      'border-radius:8px;padding:9px 16px;font-weight:600;cursor:pointer'
+      'border-radius:3px;padding:9px 16px;font-weight:600;cursor:pointer'
     decline.onclick = function () {
       dismiss(bar, 'denied')
     }
@@ -76,7 +76,7 @@
     var accept = document.createElement('button')
     accept.textContent = 'Accept'
     accept.style.cssText =
-      'background:#2b7ba6;color:#fff;border:none;border-radius:8px;padding:9px 18px;' +
+      'background:#ef7bae;color:#08131f;border:none;border-radius:3px;padding:9px 18px;' +
       'font-weight:600;cursor:pointer'
     accept.onclick = function () {
       dismiss(bar, 'granted')

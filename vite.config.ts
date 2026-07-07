@@ -20,6 +20,11 @@ export default defineConfig({
     watch: {
       ignored: ['**/src-tauri/**'],
     },
+    // Account/checkout API lives in Cloudflare Pages Functions — run
+    // `npx wrangler pages dev dist --port 8788` alongside `npm run dev`.
+    proxy: {
+      '/api': 'http://127.0.0.1:8788',
+    },
   },
   envPrefix: ['VITE_', 'TAURI_'],
   build: {
