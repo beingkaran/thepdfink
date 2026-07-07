@@ -1,3 +1,1 @@
-# thepdf.ink authorized digital sellers (ads.txt)
-# Replace pub-XXXXXXXXXXXXXXXX with your Google AdSense publisher ID once approved.
-google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+google.com, pub-9454848033838064, DIRECT, f08c47fec0942fa0

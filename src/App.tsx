@@ -1,27 +1,18 @@
 import { useCallback, useEffect, useState } from 'react'
-import { tools, type Tool } from './data/tools'
+import { Route, Routes, useNavigate } from 'react-router-dom'
+import { tools } from './data/tools'
 import { Header } from './components/Header'
-import { Hero } from './components/Hero'
-import { ToolGrid } from './components/ToolGrid'
-import { ToolPanel } from './components/ToolPanel'
-import { UpgradePanel } from './components/UpgradePanel'
-import { BatchPanel } from './components/BatchPanel'
-import { OcrPanel } from './components/OcrPanel'
-import { SummarizePanel } from './components/SummarizePanel'
-import { ScanPanel } from './components/ScanPanel'
-import { EditPanel } from './components/EditPanel'
-import { FormBuilderPanel } from './components/FormBuilderPanel'
-import { AskPanel } from './components/AskPanel'
-import { Pricing } from './components/Pricing'
 import { Footer } from './components/Footer'
 import { AdminLogin } from './components/AdminLogin'
 import { AuthModal } from './components/AuthModal'
+import { HomePage } from './pages/HomePage'
+import { ToolPage } from './pages/ToolPage'
 import { isTauri } from './lib/platform'
 import { useEntitlement, logoutAdmin } from './lib/entitlement'
 import { useUser, logoutUser, startProCheckout, fetchUser } from './lib/auth'
 
 function App() {
-  const [activeTool, setActiveTool] = useState<Tool | null>(null)
+  const navigate = useNavigate()
   const [adminOpen, setAdminOpen] = useState(false)
   const [authOpen, setAuthOpen] = useState(false)
   const [checkoutAfterAuth, setCheckoutAfterAuth] = useState(false)
@@ -61,11 +52,11 @@ function App() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
 
-    // Deep link: /?tool=<id> (used by the SEO landing pages) opens that tool directly.
+    // Deep link: /?tool=<id> (used by the SEO landing pages) opens that tool's
+    // page directly, now that tools are real routes.
     const id = params.get('tool')
-    if (id) {
-      const match = tools.find((t) => t.id === id)
-      if (match) setActiveTool(match)
+    if (id && tools.some((t) => t.id === id)) {
+      navigate(`/tools/${id}`, { replace: true })
     }
 
     // /?admin opens the local admin sign-in (unless already signed in).
@@ -93,32 +84,6 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  function renderActiveTool(tool: Tool) {
-    const close = () => setActiveTool(null)
-    // Every Pro tool sits behind the account paywall until the pro flag is set.
-    if (tool.pro && !fullAccess) {
-      return <UpgradePanel tool={tool} onClose={close} onUnlock={handleUnlockPro} />
-    }
-    switch (tool.id) {
-      case 'batch':
-        return <BatchPanel tool={tool} onClose={close} />
-      case 'ocr':
-        return <OcrPanel tool={tool} onClose={close} />
-      case 'ai-summarize':
-        return <SummarizePanel tool={tool} onClose={close} />
-      case 'scan':
-        return <ScanPanel tool={tool} onClose={close} />
-      case 'edit':
-        return <EditPanel tool={tool} onClose={close} />
-      case 'form-builder':
-        return <FormBuilderPanel tool={tool} onClose={close} />
-      case 'ai-ask':
-        return <AskPanel tool={tool} onClose={close} />
-      default:
-        return <ToolPanel tool={tool} onClose={close} />
-    }
-  }
-
   return (
     <div className="app">
       <Header
@@ -143,13 +108,17 @@ function App() {
             : 'Finalizing your payment…'}
         </div>
       )}
-      <main>
-        <Hero isPro={fullAccess} />
-        <ToolGrid onSelect={setActiveTool} fullAccess={fullAccess} />
-        {!native && !fullAccess && <Pricing onUnlockPro={handleUnlockPro} />}
-      </main>
+      <Routes>
+        <Route
+          path="/"
+          element={<HomePage fullAccess={fullAccess} native={native} onUnlockPro={handleUnlockPro} />}
+        />
+        <Route
+          path="/tools/:toolId"
+          element={<ToolPage fullAccess={fullAccess} onUnlockPro={handleUnlockPro} />}
+        />
+      </Routes>
       <Footer />
-      {activeTool && renderActiveTool(activeTool)}
       {adminOpen && (
         <AdminLogin onClose={() => setAdminOpen(false)} onSuccess={() => setAdminOpen(false)} />
       )}

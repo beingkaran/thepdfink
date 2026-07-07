@@ -1,7 +1,9 @@
-import { grantPro, json, normalizeEmail, verifyLemonSqueezySignature } from './_lib'
+import { json, normalizeEmail, verifyLemonSqueezySignature } from './_lib'
+import { grantProByEmail } from './_supabase'
 
 /**
- * Lemon Squeezy webhook: flips the account's pro flag on a completed order.
+ * Lemon Squeezy webhook: flips the account's Supabase `is_pro` flag on a completed
+ * order.
  *
  * Configure in the Lemon Squeezy dashboard → Settings → Webhooks → endpoint
  * `https://thepdf.ink/api/lemonsqueezy-webhook`, event `order_created`, and set
@@ -22,7 +24,7 @@ export const onRequestPost = async ({ request, env }: any): Promise<Response> =>
     // Only grant on a paid order (ignore refunded/pending).
     const paid = attrs.status === 'paid'
     const email = normalizeEmail(event.meta?.custom_data?.email || attrs.user_email || '')
-    if (paid && email) await grantPro(env, email)
+    if (paid && email) await grantProByEmail(env, email)
   }
 
   return json({ received: true })

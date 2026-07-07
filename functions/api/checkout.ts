@@ -1,28 +1,33 @@
-import { getSessionEmail, getUser, grantPro, json } from './_lib'
+import { json } from './_lib'
+import { getUserFromToken, grantProByEmail, isProByEmail } from './_supabase'
 
 /**
  * Start a Pro checkout for the signed-in user via Lemon Squeezy.
  *
- * Lemon Squeezy is the Merchant of Record — it collects and remits global sales
- * tax / VAT on our behalf. With LEMONSQUEEZY_API_KEY (+ store & variant ids) set
- * this creates a hosted checkout and returns its URL; the pro flag is then
- * granted by the lemonsqueezy-webhook function on `order_created`.
+ * The caller is identified by their Supabase access token (Authorization: Bearer
+ * <token>), verified server-side. Lemon Squeezy is the Merchant of Record — it
+ * collects and remits global sales tax / VAT on our behalf and pays out to the
+ * store owner. With LEMONSQUEEZY_API_KEY (+ store & variant ids) set this creates
+ * a hosted checkout and returns its URL; the pro flag is then granted by the
+ * lemonsqueezy-webhook function on `order_created`.
  *
- * Without the keys (local dev / staging) it falls back to TEST MODE: the pro
- * flag is granted immediately and the client is sent to the success URL.
+ * Without the keys (local dev / staging) it falls back to TEST MODE: the pro flag
+ * is granted immediately and the client is sent to the success URL.
  */
 export const onRequestPost = async ({ request, env }: any): Promise<Response> => {
-  const email = await getSessionEmail(request, env)
-  const user = email ? await getUser(env, email) : null
+  const token = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '')
+  const user = await getUserFromToken(env, token)
   if (!user) return json({ error: 'Sign in to unlock Pro.' }, 401)
 
-  if (user.pro) return json({ url: '/?checkout=success', alreadyPro: true })
+  if (await isProByEmail(env, user.email)) {
+    return json({ url: '/?checkout=success', alreadyPro: true })
+  }
 
   const origin = new URL(request.url).origin
 
   if (!env.LEMONSQUEEZY_API_KEY || !env.LEMONSQUEEZY_STORE_ID || !env.LEMONSQUEEZY_VARIANT_ID) {
     // TEST MODE — no payment provider configured.
-    await grantPro(env, user.email)
+    await grantProByEmail(env, user.email)
     return json({ url: '/?checkout=success&test=1', testMode: true })
   }
 
