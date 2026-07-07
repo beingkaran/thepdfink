@@ -1,14 +1,16 @@
 import * as pdfjs from 'pdfjs-dist'
 import { readPdfFile } from './pdf'
+import { llmChat, resolveBackend, RateLimitError, type ChatMsg, type LoadProgress } from './llm'
 
 /**
- * On-device "Ask your PDF".
+ * "Ask your PDF" — retrieval-augmented generation, on-device.
  *
- * Rather than shipping your document to a cloud LLM, this builds a small TF-IDF
- * search index over the PDF's sentences (each tagged with its page) and answers a
- * question by retrieving the most relevant passages. Answers are extractive — they
- * come straight from the document — and every answer cites the page(s) it came
- * from. No model download, no network: the text never leaves the device.
+ * A TF-IDF index over the PDF's sentences (each tagged with its page) retrieves
+ * the passages most relevant to the question. Those passages are then handed to a
+ * real instruction-tuned LLM — running in the browser on WebGPU, so the document
+ * still never leaves the device — which writes a grounded answer that cites the
+ * pages it drew from. When no model is available (offline desktop, no GPU) it
+ * falls back to returning the retrieved passages verbatim.
  */
 
 const STOPWORDS = new Set(
@@ -146,14 +148,21 @@ function cosine(qVec: Map<string, number>, qNorm: number, p: Passage): number {
 }
 
 const MIN_CONFIDENT = 0.14
+/** How many passages to feed the LLM as grounding context. */
+const RETRIEVE_K = 6
 
-/** Answer a question from the indexed document, with page citations. */
-export function answerQuestion(index: DocIndex, question: string): Answer {
+/**
+ * Retrieve the passages most relevant to a question, in reading order.
+ * Shared by both the LLM path (as grounding) and the extractive fallback.
+ */
+function retrieve(
+  index: DocIndex,
+  question: string,
+  k: number,
+): { passages: { p: Passage; score: number }[]; confident: boolean } {
   const { idf } = index
   const qTokens = tokenize(question)
-  if (!qTokens.length) {
-    return { answer: 'Please ask a question with a few keywords.', citations: [], confident: false }
-  }
+  if (!qTokens.length) return { passages: [], confident: false }
 
   const qTf = new Map<string, number>()
   for (const t of qTokens) qTf.set(t, (qTf.get(t) || 0) + 1)
@@ -169,30 +178,79 @@ export function answerQuestion(index: DocIndex, question: string): Answer {
 
   const scored = index.passages.map((p) => {
     let score = cosine(qVec, qNorm, p)
-    // Exact-phrase boost: reward passages that literally contain the question text.
     if (needle.length > 8 && p.text.toLowerCase().includes(needle)) score += 0.3
     return { p, score }
   })
-
   scored.sort((a, b) => b.score - a.score)
-  const best = scored[0]
-  const confident = best && best.score >= MIN_CONFIDENT
+  const confident = (scored[0]?.score ?? 0) >= MIN_CONFIDENT
 
-  // Take the top passages, drop near-duplicates, keep up to 3.
   const top: { p: Passage; score: number }[] = []
   const seen = new Set<number>()
   for (const s of scored) {
     if (s.score <= 0) break
-    if (top.length >= 3) break
-    const key = s.p.id
-    if (seen.has(key)) continue
-    // Skip a passage that's textually contained in one already chosen.
+    if (top.length >= k) break
+    if (seen.has(s.p.id)) continue
     if (top.some((t) => t.p.text.includes(s.p.text) || s.p.text.includes(t.p.text))) continue
-    seen.add(key)
+    seen.add(s.p.id)
     top.push(s)
   }
+  top.sort((a, b) => a.p.id - b.p.id)
+  return { passages: top, confident }
+}
 
-  if (!top.length) {
+/**
+ * Extractive answer — returns the retrieved passages verbatim. Used offline when
+ * no LLM backend is available.
+ */
+export function answerQuestion(index: DocIndex, question: string): Answer {
+  const qTokens = tokenize(question)
+  if (!qTokens.length) {
+    return { answer: 'Please ask a question with a few keywords.', citations: [], confident: false }
+  }
+  const { passages, confident } = retrieve(index, question, 3)
+  if (!passages.length) {
+    return {
+      answer: "I couldn't find anything about that in this document.",
+      citations: [],
+      confident: false,
+    }
+  }
+  const body = passages.map((t) => t.p.text.replace(/\s+/g, ' ').trim()).join(' ')
+  const answer = confident ? body : `I'm not certain, but this looks most relevant:\n\n${body}`
+  const citations: Citation[] = passages.map((t) => ({ page: t.p.page, text: t.p.text }))
+  return { answer, citations, confident }
+}
+
+const SYSTEM_ASK =
+  'You answer questions strictly from the provided document excerpts. Each excerpt is labelled with ' +
+  'its page number like [p3]. Use only information in the excerpts — never invent facts. When you ' +
+  'state something, cite its source inline as (p<number>). If the excerpts do not contain the ' +
+  "answer, say so plainly. Be concise and direct."
+
+export interface AskOptions {
+  onToken?: (delta: string, full: string) => void
+  onLoad?: (p: LoadProgress) => void
+  signal?: AbortSignal
+}
+
+/**
+ * Answer a question with retrieval-augmented generation. Retrieves grounding
+ * passages, then has the LLM compose a cited answer. Falls back to the extractive
+ * {@link answerQuestion} when no model backend is available.
+ */
+export async function askQuestion(
+  index: DocIndex,
+  question: string,
+  opts: AskOptions = {},
+): Promise<Answer> {
+  if (resolveBackend() === 'unavailable') {
+    return answerQuestion(index, question)
+  }
+
+  const { passages, confident } = retrieve(index, question, RETRIEVE_K)
+  const citations: Citation[] = passages.map((t) => ({ page: t.p.page, text: t.p.text }))
+
+  if (!passages.length) {
     return {
       answer: "I couldn't find anything about that in this document.",
       citations: [],
@@ -200,13 +258,42 @@ export function answerQuestion(index: DocIndex, question: string): Answer {
     }
   }
 
-  // Compose the answer in reading order for coherence.
-  const ordered = [...top].sort((a, b) => a.p.id - b.p.id)
-  const body = ordered.map((t) => t.p.text.replace(/\s+/g, ' ').trim()).join(' ')
-  const answer = confident
-    ? body
-    : `I'm not certain, but this looks most relevant:\n\n${body}`
+  const context = passages
+    .map((t) => `[p${t.p.page}] ${t.p.text.replace(/\s+/g, ' ').trim()}`)
+    .join('\n\n')
 
-  const citations: Citation[] = ordered.map((t) => ({ page: t.p.page, text: t.p.text }))
-  return { answer, citations, confident }
+  const messages: ChatMsg[] = [
+    { role: 'system', content: SYSTEM_ASK },
+    {
+      role: 'user',
+      content: `Document excerpts:\n"""\n${context}\n"""\n\nQuestion: ${question}`,
+    },
+  ]
+
+  try {
+    const answer = await llmChat(messages, {
+      temperature: 0.2,
+      maxTokens: 700,
+      feature: 'ask',
+      onToken: opts.onToken,
+      onLoad: opts.onLoad,
+      signal: opts.signal,
+    })
+    if (!answer) throw new Error('empty')
+    return { answer, citations, confident }
+  } catch (err) {
+    if (opts.signal?.aborted) throw err
+    // Daily quota hit — still give a basic retrieved answer, but say why.
+    if (err instanceof RateLimitError) {
+      const base = answerQuestion(index, question)
+      const hrs = Math.max(1, Math.round((err.resetSeconds || 0) / 3600))
+      const reset = err.resetSeconds ? ` (resets in ~${hrs}h)` : ''
+      return {
+        ...base,
+        confident: false,
+        answer: `⚠️ ${err.message}${reset} Here's a basic keyword-based answer instead:\n\n${base.answer}`,
+      }
+    }
+    return answerQuestion(index, question)
+  }
 }

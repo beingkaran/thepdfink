@@ -19,6 +19,66 @@ export function normalizeEmail(raw: string): string {
   return String(raw).trim().toLowerCase()
 }
 
+// ── Daily rate limiting (KV-backed) ──────────────────────────────────────────
+
+/** Minimal subset of the Cloudflare KV binding we rely on. */
+export interface KVNamespace {
+  get(key: string): Promise<string | null>
+  put(key: string, value: string, opts?: { expirationTtl?: number }): Promise<void>
+}
+
+/** Seconds from `now` until the next UTC midnight (when a daily quota resets). */
+export function secondsUntilUtcMidnight(now: Date = new Date()): number {
+  const next = Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate() + 1,
+    0,
+    0,
+    0,
+    0,
+  )
+  return Math.max(1, Math.ceil((next - now.getTime()) / 1000))
+}
+
+export interface RateLimitResult {
+  allowed: boolean
+  limit: number
+  remaining: number
+  /** Seconds until the quota resets (next UTC midnight). */
+  resetSeconds: number
+}
+
+/**
+ * Soft per-key daily rate limit backed by KV.
+ *
+ * KV is eventually consistent and has no atomic increment, so under heavy
+ * concurrency a few extra requests may slip through — acceptable for a cost-
+ * control cap, not a security boundary. Counts the current request (pre-flight).
+ * If `kv` is missing (binding not configured) it fails **open** so a misconfig
+ * never takes the feature down.
+ */
+export async function rateLimitDaily(
+  kv: KVNamespace | undefined,
+  bucket: string,
+  id: string,
+  limit: number,
+): Promise<RateLimitResult> {
+  const resetSeconds = secondsUntilUtcMidnight()
+  if (!kv) return { allowed: true, limit, remaining: limit, resetSeconds }
+
+  const day = new Date().toISOString().slice(0, 10)
+  const key = `rl:${bucket}:${id}:${day}`
+  const used = Number((await kv.get(key)) || '0') || 0
+
+  if (used >= limit) {
+    return { allowed: false, limit, remaining: 0, resetSeconds }
+  }
+  // Expire a minute after reset so stale counters clean themselves up.
+  await kv.put(key, String(used + 1), { expirationTtl: resetSeconds + 60 })
+  return { allowed: true, limit, remaining: Math.max(0, limit - (used + 1)), resetSeconds }
+}
+
 function toHex(bytes: ArrayBuffer): string {
   return [...new Uint8Array(bytes)].map((b) => b.toString(16).padStart(2, '0')).join('')
 }
